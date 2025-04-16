@@ -14,7 +14,7 @@ interface CustomSession extends Session {
 const port = process.env.PORT || 3000;
 const app = express();
 const sess = {
-  secret: "very-secret-key",
+  secret: "very-secret-key", // The session ID, which in this case is saved in the cookie, will be encrypted then decrypted with this key.
   resave: false, // Forces the session to be saved back to the session store, even if the session was never modified during the request.
   saveUninitialized: false, // Forces a session that is "uninitialized" to be saved to the store.
   store: new session.MemoryStore(),
