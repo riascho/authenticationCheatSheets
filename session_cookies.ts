@@ -1,8 +1,7 @@
 import express from "express";
 import session from "express-session"; // https://expressjs.com/en/resources/middleware/session.html
-import { Session } from "express-session";
 
-interface CustomSession extends Session {
+interface CustomSession extends session.Session {
   test: string;
   authenticated: boolean;
   user: {
