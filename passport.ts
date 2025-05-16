@@ -1,8 +1,20 @@
+// This is a simple example of using Passport.js with TypeScript and Express.js
+// launch with npx ts-node passport.ts
+
 import express from "express";
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
-import { db } from "./db.ts";
+import { db } from "./db";
+declare global {
+  namespace Express {
+    interface User {
+      id: string;
+      username: string;
+      password: string;
+    }
+  }
+}
 
 const app = express();
 
@@ -26,6 +38,37 @@ passport.use(
       return done(null, user);
     });
   })
+);
+
+app.use(
+  session({
+    secret: "secret-key",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+// determines what user data is stored in the session, called when authentication succeeds
+// It converts a user object to a unique identifier (in this case, user.id) -> Only the user ID is saved in the session, not the entire user object
+passport.serializeUser((user: Express.User, done) => {
+  done(null, user.id);
+});
+
+// retrieves the complete user object from the database, called on every request with an authenticated session
+// It takes the ID from the session and finds the corresponding user and attaches the full user object to the request as req.user
+passport.deserializeUser((id, done) => {
+  db.users.findById(id as string, function (err, user) {
+    if (err) return done(err);
+    done(null, user);
+  });
+});
+
+app.get(
+  "/login",
+  passport.authenticate("local", { failureRedirect: "/login" }),
+  (req, res) => {
+    res.send("Hello World!");
+  }
 );
 
 app.listen(3000, () => {

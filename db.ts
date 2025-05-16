@@ -11,5 +11,19 @@ export const db = {
         callback(null, user);
       }, 2000);
     },
+
+    findById: (
+      id: string,
+      callback: (err: Error | null, user?: any) => void
+    ) => {
+      setTimeout(() => {
+        const user = {
+          id: id,
+          username: "testUser",
+          password: "helloWorld456",
+        };
+        callback(null, user);
+      }, 2000);
+    },
   },
 };
