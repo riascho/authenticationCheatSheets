@@ -256,3 +256,52 @@ Encoded information is easily reversed and only requires knowledge of the algori
 Developers might want to hide trade secrets or intellectual property from others who can access their code. Obfuscating their code makes it difficult for others to steal code and use it for their own purposes. Obfuscation can also make it harder for users to hack software or get around licensing requirements needed to use programs.
 
 Malicious actors might also use obfuscation to make it hard for users or antivirus software to detect a virus they are planting on a system.
+
+## [bcrypt](./bcrypt/users.route.js)
+
+Bcrypt is a password hashing function specifically created for password hashing, incorporating a salt to protect against rainbow table attacks.
+
+When a password is hashed with bcrypt, the generated hash includes the salt as part of the hash string itself. The salt and other parameters are embedded in the hash.
+
+When comparing a password, bcrypt extracts the salt from the stored hash and uses it to hash the input password in the same way. This allows bcrypt to check if the hashes match, without needing to store the salt separately.
+
+A bcrypt hash is a single string that follows a specific format. This format includes information about the algorithm, the cost factor, the salt, and the hashed password, all combined into one string.
+
+When bcrypt compares passwords, it reads the salt and cost factor from the hash string itself. The hash string is structured so bcrypt knows exactly which part is the salt and which part is the hashed password. This way, bcrypt can use the correct salt to hash the input password and compare the results.
+
+An attacker can extract the salt from a bcrypt hash, but this does not make it easy to hack the password. The salt’s purpose is to make each hash unique, even for users with the same password.
+
+To “hack” the password, the attacker would still need to guess the original password and hash each guess with the extracted salt, comparing the result to the stored hash. This process is called a brute-force attack and is very slow with bcrypt because bcrypt is designed to be computationally expensive. The salt only prevents attackers from using precomputed tables (rainbow tables) to reverse hashes quickly.
+
+So, knowing the salt does not make it easy to recover the password. The strength of bcrypt comes from both the salt and the slow hashing process.
+
+### Key Functions in `bcrypt`
+
+#### `genSalt(rounds)`
+
+```javascript
+const salt = await bcrypt.genSalt(10);
+```
+
+- Generates a random salt
+- The `rounds` parameter determines the complexity (default is 10)
+- More rounds = more secure but slower
+
+#### `hash(password, salt)`
+
+```javascript
+const hashedPassword = await bcrypt.hash(password, salt);
+```
+
+- Combines password with salt and creates hash
+- Returns a complete hashed password string
+- The salt is stored as part of the hash
+
+#### `compare(password, hash)`
+
+```javascript
+const isMatch = await bcrypt.compare(password, hashedPassword);
+```
+
+- Compares a plain-text password with a hash
+- Returns `true` if they match, `false` if they don't
